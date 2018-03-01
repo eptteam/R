@@ -1,0 +1,120 @@
+---
+title: "ggplot(datacamp)"
+author: "fat guy"
+date: "2018/02/16"
+output:
+  html_document:
+    toc : true
+    toc_depth: 3
+    toc_float: 
+      collapsed: false
+      smooth_scroll: false
+---
+
+<font color="red" size = 24> data "mtcars" is preloaded in R </font>
+<font color="red" size = 24> data "diamonds" is preloaded in R </font>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+##compare this two commands with `factor()` inside `aes()`
+
+Change the command so that cyl is treated as factor
+
+```{r}
+library(ggplot2)
+
+ggplot(mtcars, aes(x = cyl, y = mpg)) +
+  geom_point()
+ggplot(mtcars, aes(x = factor(cyl), y = mpg)) +
+  geom_point()
+```
+
+
+
+
+##compare color and size in `aes()`
+
+furthermore, `geom_point()` + `geom_smooth()` are common combination
+
+```{r}
+ggplot(mtcars, aes(x = wt, y = mpg, color = disp)) +
+  geom_point() + geom_smooth()
+
+ggplot(mtcars, aes(x = wt, y = mpg, size = disp)) +
+  geom_point()
+```
+
+
+
+
+##a continuous variable cant not be mapped to shape
+
+"shape" only makes sense with categorical data, and "disp" is continuous.
+
+```{r}
+#ggplot(mtcars, aes(x = wt, y = mpg, shape = disp)) +
+#  geom_point()
+ggplot(mtcars, aes(x = wt, y = mpg, shape = factor(disp))) +
+  geom_point()
+```
+
+
+
+
+##clarity mapped to color
+```{r}
+ggplot(diamonds, aes(x = carat, y = price, color = clarity)) +
+  geom_smooth()
+```
+
+
+
+
+##transparent
+
+Set "alpha ="  inside `geom_point()`. This will make the points 40%/20% transparent.
+
+```{r}
+ggplot(diamonds, aes(x = carat, y = price, color = clarity)) +
+  geom_point()
+ggplot(diamonds, aes(x = carat, y = price, color = clarity)) +
+  geom_point(alpha = 0.4)
+ggplot(diamonds, aes(x = carat, y = price, color = clarity)) +
+  geom_point(alpha = 0.2)
+```
+
+
+
+
+##`aes()` can also be uesd in `geom_point()` etc..
+
+Note that you can also call `aes()` within the `geom_point()` function.
+
+furthermore, "se = " can display the smooth around the smooth(TRUE by default)
+
+complete themes : http://ggplot2.tidyverse.org/reference/ggtheme.html
+
+```{r}
+ggplot(diamonds, aes(x = carat, y = price)) + geom_point()
+ggplot(diamonds, aes(x = carat, y = price, color = clarity)) + geom_point()
+ggplot(diamonds, aes(x = carat, y = price, color = clarity)) + geom_point() + theme_minimal()
+ggplot(diamonds, aes(x = carat, y = price)) + geom_point(aes(color = clarity))
+ggplot(diamonds, aes(x = carat, y = price)) + geom_point() + 
+  geom_smooth(aes(color = clarity))
+ggplot(diamonds, aes(x = carat, y = price)) + geom_point() + 
+  geom_smooth(aes(color = clarity, se = FALSE))
+```
+
+
+
+
+#probability desity function
+```{r}
+#ggplot(airquality, aes(x = Temp, color = Month)) +  geom_density()
+```
+

@@ -1,0 +1,540 @@
+---
+title: "R practice"
+author: "fat guy"
+date: "2018/02/16"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 6
+    toc_float:
+      collapsed: no
+      smooth_scroll: no
+  word_document:
+    toc: yes
+    toc_depth: '6'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+#function
+
+##paste and append
+
+paste for character
+
+append for vector
+
+data can be a 5*n matrix, n is a positive integer
+
+we can give the column names by using `colnames()`
+
+```{r}
+library(magrittr)
+nms <- paste("year_", 1:153)
+nms
+nms1 <- paste("year_", 1:5, sep = ",")
+nms1
+nms0 <- paste0("year_", 1:5)
+nms0
+e <- airquality$Wind %>% as.matrix()
+rownames(e) <- nms
+e
+paste(iris$Sepal.Length, cars$speed, sep = "vs")
+append(iris$Sepal.Length, cars$speed)
+```
+
+
+
+
+##sample, sort and order
+```{r}
+c <- sample(1:100, size = 20)
+sort(c, decreasing = TRUE)
+order(c, decreasing = TRUE)
+c[order(c, decreasing = TRUE)]
+```
+
+
+
+
+##unique and duplicate
+
+unique : exract the elements from data
+
+duplicated : test the repetition, return TURE if the duplicate data show behind
+```{r}
+unique(cars$dist)
+duplicated(cars$dist) %>% table()
+```
+
+
+
+
+##which
+```{r}
+which(airquality$Month == 5)
+```
+
+http://www3.nccu.edu.tw/~99354011/R%20commands%2811.09.13%29.pdf
+
+
+
+
+#data visualiztion
+
+##build histogram
+
+breaks : the n+1 cell boundaries (= breaks if that was a vector). These are the nominal breaks, not with the boundary fuzz.
+
+```{r}
+#Build histogram of data
+hist(cars$dist, breaks = 5) #e.g. 1,2,3,4,5,6,7,8........
+hist(cars$dist, breaks = 10)
+```
+
+
+
+
+#logical operator
+
+Next to relational operators, there are also logical operators
+
+& : AND
+
+| : OR
+
+! : NOT
+
+==、!= ：等於、不等於
+
+A %in% B ：A 是否在 B 中
+
+&&、＆ : 交集，& 適用於向量式的邏輯判斷，&& 適用於單一值的邏輯判斷
+
+||、| ：聯集，| 適用狀況與 & 相同，|| 適用狀況與 && 相同
+
+```{r}
+# e.g.What's the proportion of dist in data cars that is greater than or equal to 70 and lower than or equal to 85?
+mean(cars$dist >= 70 & cars$dist <= 85)
+
+# e.g.How many cars had a dist of 34 or 40?
+sum(cars$dist == 34 | cars$dist == 40)
+```
+
+
+
+
+#loop
+
+##if, else
+```{r}
+a <- 99
+if (a > 70) {
+  print("乖")
+} else {
+  print("重修吧你")
+}
+```
+
+```{r}
+ifelse(a > 70, "乖", "重修吧幹")
+```
+
+```{r}
+if (a > 70) "乖" else "重修吧廢"
+```
+
+
+
+
+##if, else if, else
+```{r}
+b <- mean(cars$dist)
+if (b > 0.9) {
+  print("nice")
+} else if (prop_less > 0.8 & prop_less <= 0.9) {
+  print("its ok")
+} else {
+  print("垃圾")
+}
+```
+
+
+
+
+##if & else, if & else
+```{r}
+me <- 89
+classmean <- 75.515
+if (classmean > 75) {
+  if(classmean > me) {
+    print("66666")
+  } else {
+    print("7777")
+  }
+} else {
+  if (classmean > me){
+    print("i am fat guy")
+  } else {
+    print("嘻嘻嘻")
+  }
+}
+```
+
+```{r}
+me <- 89
+classmean <- 75.515
+if (classmean > 75) 
+{
+  if(classmean > me) 
+  {
+    print("66666")
+  } else 
+  {
+    print("7777")
+  }
+} else 
+{
+  if (classmean > me)
+  {
+    print("i am fat guy")
+  } else 
+  {
+    print("嘻嘻嘻")
+  }
+}
+```
+
+
+
+
+## if
+```{r}
+d <- cars$dist[cars$dist < 65]
+s <- cars$speed[cars$speed > 5 | cars$speed > 14]
+if (length(d) - length(s) < 0) {
+  print("fat guy")
+}
+```
+
+
+
+
+##switch
+```{r}
+switch(1, 1+1, 2+1, 3+1)
+switch(2, 1+1, 2+1, 3+1)
+switch("fatguy", fat = 100, fatguy = "me")
+```
+
+
+
+
+##switch & if else
+```{r}
+switch( if (a > 90) 1 else 2, 1+1, 2+2 )
+
+switch( ifelse (a > 90, 1, 2), 3+3, 4+4)
+
+switch( if ( a > 90 ) { 1
+         } else { 2
+             }, 5+5, 6+6
+       )
+```
+
+
+
+
+##for
+```{r}
+y <- 0
+for ( x in c(1:10) ) y <- x + y
+y; sum(y); print(y)
+
+y <- 0
+for ( x in c(1:10) ) {
+  y <- x + y
+}
+y
+
+y <-0
+for (x in 1:10 ) y <- x + y
+y
+
+y <- 0
+for ( x in c(1:10) ) z <- x + y
+z; sum(z); print(z)
+
+y <- 0
+for ( x in c(1:10000000) ) {
+  z <- x + y
+}
+z
+
+```
+
+
+
+
+##while
+```{r}
+x <- 1
+y <- 0
+while (x <= 17) {
+  y = y + x #1加到17的意思
+  x = x + 1 #防止無窮迴圈
+}
+y #1加到17=210
+x #17+1(最後一個)
+
+
+x <- 1
+y <- 0
+while (x <= 1700000) {
+  if(x > 9) break
+  y = y + x
+  x = x + 1
+}
+y #1加到9=45
+x #break when x > 9, thus x = 9 + 1
+```
+
+
+
+
+##repeat & break
+```{r}
+x <- 0
+y <- 1
+repeat {
+  if (y > 9) break # "break" means "stop"
+  x = y + x
+  y = y + 1
+}
+x
+y
+```
+
+
+
+
+#while/repeat & break
+```{r}
+#now, want to calculate summation from 1 to 20 except 5
+x <- 0
+y <- 0
+repeat {
+  if(x > 20) {
+    break
+  } else if (x == 5) {
+    x <- x + 1 #if omit this code, infinite loop will be occured
+    next
+  }
+  y <-  x + y
+  x <-  x + 1
+}
+y
+x
+```
+
+
+
+
+# apply
+
+`lapply`的第一個參數`X`通常是一個vector。 第二個參數`FUN`則是代表一種「動作」。 `lapply`會對每一個`X`的元素進行`FUN`所定義的動作，並且把結果彙整回R之中。
+
+lapply returns a list of the same length as X, each element of which is the result of applying FUN to the corresponding element of X.
+
+另外一種方式是使用`sapply`這個函數。 `sapply`和`lapply`幾乎一樣，差別在於`sapply`最後會嘗試重新整理輸出的格式，將list轉成array。請同學試試`sapply(tmp, "[", 1)`。
+
+當我們想要從文字中擷取出資訊時，都可以優先考慮運用`substring`或`strsplit`來擷取資訊。 而當R將資訊轉成非結構化的list物件後，可以運用`lapply`或`sapply`做資料的整理。
+
+http://127.0.0.1:21205/library/base/html/lapply.html
+
+##apply & supply
+```{r}
+iris$Sepal.Width
+
+library(knitr)
+library(kableExtra)
+lapply(iris$Sepal.Width, "+", 1) %>% kable("html") %>% scroll_box(height = "500px", width = "500px")
+
+sapply(iris$Sepal.Width, "+", 1)
+```
+
+
+
+
+#processing data
+
+##missing value
+```{r}
+table(is.na(airquality))
+library(magrittr)
+library(knitr)
+library(kableExtra)
+airquality %>% is.na() %>% kable("html") %>% scroll_box(height = "500px")
+#如何看每一欄有幾個na?
+na.omit(airquality) %>% kable("html") %>% scroll_box(height = "500px")
+```
+
+
+
+
+##linear regression
+
+build regression
+
+```{r}
+library(dplyr)
+f <- lm(data = iris, Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width) %>% summary()
+f
+```
+
+`shapiro.test()` can test the normality of residual
+
+```{r}
+f$residuals %>% kable("html") %>% scroll_box(height = "500px")
+shapiro.test(f$residuals)
+#do not reject Ho
+```
+
+
+`durbinwatsontest()` is a test of Independence or residual
+
+```{r}
+library(car)
+durbinWatsonTest(lm(data = iris, Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width))
+#do not reject Ho
+```
+
+
+function `ncvTest()` in package "car" is a tset of homogenity of variance
+
+```{r}
+ncvTest(lm(data = iris, Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width))
+#reject Ho
+```
+
+
+
+
+## `[]` and `[[]]`
+
+x[i]：回傳向量元素所有資訊
+x[[i]]：只回傳向量元素的值
+x[元素名稱]：回傳向量元素所有資訊
+x[[元素名稱]]：只回傳向量元素的值
+
+```{r}
+library(dplyr)
+library(knitr)
+library(kableExtra)
+iris[1] %>% kable("html") %>% scroll_box(height = "250px", width = "500px")
+iris[[1]] %>% kable("html") %>% scroll_box(height = "250px", width = "500px")
+
+airquality["Wind"] %>% kable("html") %>% scroll_box(height = "250px", width = "500px")  #"element's name"
+airquality[["Wind"]] %>% kable("html") %>% scroll_box(height = "250px", width = "500px")
+
+iris[2:5,1:3]
+```
+
+
+
+
+##array, aperm and dim
+
+```{r}
+array(iris$Petal.Length, c(3, 4)) #generating a 3*4 array
+
+array(iris$Sepal.Width, c(5, 8)) %>% aperm() #a 8*5 matrix
+```
+
+
+
+
+##input data (iconv)
+
+iconv(data, "big5", "utf8") convert the code of data to UTF-8
+
+
+
+
+##output data
+
+```{r}
+setwd("C:/Users/USER/Downloads/")
+write.csv(iris, file = "iris.csv")
+getwd()
+```
+
+
+
+
+#database
+
+##read data from database
+
+use <font color="green">DBI, gWidgets, RMySQL and dbConnect</font> to read data from database, the following is to read data from <font color="blue">MySQL</font> database as an example
+
+```{r, include = FALSE}
+library(DBI)
+library(gWidgets)
+library(RMySQL)
+library(dbConnect)
+
+#house1 <- dbConnect(MySQL(), dbname = "house_development", password = "123456", username = "root", host = "localhost")
+
+#dbSendQuery(house1, "SET NAMES big5") # 設定BIG-5防止亂碼
+
+#dbGetQuery(house1, "show variables like 'character_%'") # '' 內是VARIABLE顯示出來的形式
+
+#db_list_tables(house1) 
+
+#house <- dbGetQuery(house, "select * from house") # 讀取資料
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+a<-airquality %>% gather(type,num)
+a$num%<>%as.character()
+a[is.na(a$num), 2]<-0 #等同於a$num[is.na(a$num)]
+a %>% filter(num==0) %>% group_by(type) %>% summarise(n=n()) %>% View()
+
+
+
+
+mm <- rnorm(1000)
+density(mm)
+
+

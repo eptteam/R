@@ -1,0 +1,104 @@
+---
+title: "markdown practice"
+author: "fat guy"
+date: "2018/01/22"
+output:
+  html_document:
+    toc : true
+    toc_depth: 3
+    toc_float: 
+      collapsed: false
+      smooth_scroll: false
+  pdf_document: default
+  word_document: default
+---
+
+R Markdown sent back both result and code to the console as a default `include = TRUE`
+
+`include = FALSE` : will not display neither result nor code
+
+`echo = FLASE` : display the result, the code will be hid
+
+`result = "hide"` : display the code, the result will be hid
+
+
+press ctrl + alt + I to generate a new chunk
+
+```{r setup, include=FALSE} 
+# chunk setting ¡ô
+knitr::opts_chunk$set(echo = TRUE) #global setting
+# options(knitr.table.format = "html")
+```
+
+
+# Cars
+
+```{r}
+summary(cars) #include = TRUE #default
+```
+```{r, include = FALSE}
+summary(cars) #include = FALSE #we had neither code nor output(result)
+```
+```{r, echo = FALSE}
+summary(cars) #echo = FALSE #only result
+```
+```{r, results = "hide"}
+summary(cars) #results = "hide" #only code
+```
+
+# Pressure
+
+```{r}
+plot(pressure)
+```
+
+# Mixed Code and Text in the Same Paragraph
+
+we want to create a sequence using `seq()` fuction
+
+
+
+# Advanced Chunk Argument Setting 
+
+### set chunk by chunk
+
+```{r, echo = FALSE, fig.width = 4, fig.height = 2.5}
+plot(cars)
+```
+
+### we can set argument via global chunk
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(fig.width = 8, fig.height = 5)
+```
+```{r}
+plot(cars)
+```
+
+
+# Table
+
+### default
+
+Function `kable()` can list all data at below
+```{r}
+library(knitr)
+kable(cars)
+```
+
+### kable(tidy data)
+
+```{r}
+library(knitr)
+kable(iris)
+```
+
+### limit the table to a fixed height
+
+```{r}
+library(knitr)
+library(dplyr)
+library(kableExtra)
+cars %>% kable("html") %>% scroll_box(height = "500px", width = "500px")
+```
+
