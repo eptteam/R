@@ -23,7 +23,7 @@ library(kableExtra)
 
 
 
-#function
+# processing data
 
 ##paste and append
 
@@ -39,7 +39,7 @@ we can give the column names by using `colnames()`
 library(magrittr)
 nms <- paste("year_", 1:153)
 nms
-nms1 <- paste("year_", 1:5, sep = ",")
+nms1 <- paste("year_", 1:5, sep = "ffff")
 nms1
 nms0 <- paste0("year_", 1:5)
 nms0
@@ -56,10 +56,15 @@ append(iris$Sepal.Length, cars$speed) #append another data
 
 ##sample, sort and order
 ```{r}
-c <- sample(1:100, size = 20)
-sort(c, decreasing = TRUE)
-order(c, decreasing = TRUE)
-c[order(c, decreasing = TRUE)]
+set.seed(87)
+c1 <- sample(1:100, size = 20)
+c1
+sort(c1, decreasing = TRUE)
+order(c1, decreasing = TRUE) #??
+c1[order(c1, decreasing = TRUE)]
+
+c2 <- replicate(10, sample(1:100, 20))
+c2
 ```
 
 
@@ -86,13 +91,346 @@ which(airquality$Month == 5)
 
 
 
+##
+```{r}
+table(is.na(airquality))
+library(magrittr)
+library(knitr)
+library(kableExtra)
+airquality %>% is.na() %>% kable("html") %>% scroll_box(height = "500px")
+#如何看每一欄有幾個na?
+na.omit(airquality) %>% kable("html") %>% scroll_box(height = "500px")
+```
+
+
+
+
+##NA
+```{r}
+airquality <- airquality
+
+library(magrittr)
+is.na(airquality$Ozone) %>% sum()
+airquality$Ozone[airquality$Ozone == "NA"] #this code is equal to the following code
+airquality[is.na(airquality$Ozone), 1]
+#and compare with the follwing code
+airquality[is.na(airquality$Ozone), 2]
+airquality[is.na(airquality$Ozone), 3]
+
+#more example
+airquality[is.na(airquality$Solar.R), 1]
+airquality[is.na(airquality$Solar.R), 2]
+airquality[is.na(airquality$Solar.R), 3]
+```
+
+
+
+
+##`[]` and `[[]]`
+
+x[i]：回傳向量元素所有資訊
+x[[i]]：只回傳向量元素的值
+x[元素名稱]：回傳向量元素所有資訊
+x[[元素名稱]]：只回傳向量元素的值
+
+```{r}
+library(dplyr)
+library(knitr)
+library(kableExtra)
+iris[1] %>% kable("html") %>% scroll_box(height = "250px", width = "500px")
+iris[[1]] %>% kable("html") %>% scroll_box(height = "250px", width = "500px")
+
+airquality["Wind"] %>% kable("html") %>% scroll_box(height = "250px", width = "500px")  #"element's name"
+airquality[["Wind"]] %>% kable("html") %>% scroll_box(height = "250px", width = "500px")
+
+iris[2:5,1:3]
+```
+
+
+
+
+##array, aperm and dim
+```{r}
+array(iris$Petal.Length, c(3, 4)) #generating a 3*4 array
+
+array(iris$Sepal.Width, c(5, 8)) %>% aperm() #a 8*5 matrix
+```
+
+
+
+
+##input data (iconv : convert the encoding)
+
+iconv(data, "big5", "utf8") convert the encoding of data to UTF-8
+
+
+
+
+##output data
+```{r}
+setwd("C:/Users/USER/Downloads/")
+write.csv(iris, file = "iris.csv")
+getwd()
+```
+
+
+
+
+##recode
+```{r}
+library(magrittr)
+mtcars <- mtcars
+mtcars %>% class()
+median(mtcars$disp)
+repeat {
+  if (median(mtcars$disp) == 0 | median(mtcars$disp) == 0.5 | median(mtcars$disp) == 1) break
+  mtcars$disp <- ifelse(mtcars$disp >196.3, 1, 0)
+}
+mtcars$disp
+
+
+mtcars <- datasets::mtcars
+if (median(mtcars$disp) == 0.5 | median(mtcars$disp) == 0 | median(mtcars$disp) == 1) {
+   print("done")
+} else {
+   mtcars$disp <- ifelse (mtcars$disp > 196.3, 1, 0)
+} 
+mtcars$disp
+```
+
+```{r}
+library(magrittr)
+ToothGrowth <- ToothGrowth
+ToothGrowth %>% class()
+ToothGrowth$supp <-  ifelse(ToothGrowth$supp %in% "VC", "isVChaha", "notVC QAQ")
+
+iris <- iris
+iris$Species <- ifelse(iris$Species %in% "setosa", "IsSetosa","Notsetosa")
+```
+
+```{r}
+"setosa" %in% iris$Species
+"setosa" %in% iris #fail in dataframe
+"5.1" %in% iris
+```
+
+
+
+
+##reshape
+```{r}
+library(magrittr)
+iris1 <- iris %>% stack()
+iris1
+#iris2 <- iris %>% unstack() #???
+#iris2
+```
+
+```{r}
+library(longitudinalData) #???
+#iris4 <- iris
+#iris4 <- longitudinalData::artificialJointLongData
+
+#data_long <- reshape(iris4, direction="long", varying = list(c("v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10"), c("w0", "w1", "w2", "w3", "w4", "w5", "w6", "w7", "w8", "w9", "w10"), c("x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10")), v.names = c("v", "w", "x"), idvar = "id")
+
+#data_wide <- reshape(data_long, direction="wide",v.names = c("v", "w", "x"), idvar = "id")
+
+```
+
+want to know how many NA in column, respectively
+```{r}
+airquality <- airquality
+
+library(tidyr)
+airquality1 <- airquality %>% gather(columnname, value) #convert wide format data to long format data
+
+library(dplyr)
+#sum(airquality$value == "NA") faliure, refer the following code
+sum(is.na(airquality$value))
+airquality[is.na(airquality$value), 2] <- 0
+airquality %>% filter(value == 0) %>%  group_by(columnname) %>% summarise("NA"=n()) %>% View()
+```
+
+
+
+
+##data combination
+```{r}
+ept1 <- list(names = c("tung", "long", "fatguy"), cm = c(18, 3, 20))
+ept2 <- list(sport = c("大肌肌", "LOL", "肥宅不運動"), sport_time = c(20, 24, 0))
+library(magrittr)
+ept12_1 <- cbind(ept1$names, ept2$sport_time) %>% as.data.frame()
+class(ept12_1)
+colnames(ept12_1) <- c("names", "sport_time")
+ept12_1
+
+ept12_2 <- cbind(ept1$names, ept2$sport, ept2$sport_time)
+class(ept12_2)
+colnames(ept12_2) <- c("names", "sport", "sport_time")
+ept12_2
+```
+
+```{r}
+ept3 <- cbind(names = c("tung", "long", "fatguy"), cm = c(18, 3, 20)) %>% as.data.frame()
+ept4 <- cbind(c("大肌肌", "LOL", "肥宅不運動"), c(20, 24, 0)) %>% as.data.frame()
+colnames(ept4) <- c("sport", "sport_time")
+ept34_1 <- cbind(ept3, ept4)
+ept34_2 <- merge(ept3, ept4) #這裡不適合
+
+ept5 <- cbind(names = c("tung", "long", "fatguy"), cm = c(18, 3, 20))
+ept6 <- cbind(names = c("tung", "long", "fatguy"), sport = c("大肌肌", "LOL", "肥宅不運動"), sport_time = c(20, 24, 0))
+ept56_1 <- merge(ept5, ept6, by = "names") #有相同的column name
+ept56_2 <- merge(ept5, ept6)
+```
+
+
+
+
+##data partition
+```{r}
+iris <- iris
+rep(1:11, 3)
+sample(50000, 100) #50000 隨機 再抽樣 (抽100個)
+sample(rep(1:11, 5)) #1:11重複5次 再抽樣
+sample(rep(1:11, 5), 50) #1:11重複5次 再抽樣 (抽50個)
+
+set.seed(1234)
+iris0 <- split(iris, c(10, 25, 55, 9999, 8787)) #split依照10,25,55,9999分組 因此最大資料可取用量 為5組, 若是iris0[[5]]則無法取得
+iris1 <- split(iris, factor(sample(rep(1:15, 10)))) #split會分組 因為1:15 所以共分成15組 因此最大資料可取用量 為15組, 若是iris1[[16]]則無法取得, that is unique(rep(1:15, 10)) = 15
+iris1_1 <- iris1[[1]] #取第一組
+iris1_2 <- iris1[[2]] #取第二組
+iris1_3 <- iris1[[3]] #取第三組
+length(iris1_1$Sepal.Length)
+length(iris1_2$Sepal.Length)
+length(iris1_3$Sepal.Length)
+
+iris <- iris
+subset(iris$Sepal.Width, iris$Sepal.Width > median(iris$Sepal.Width))
+median(iris$Sepal.Length)
+median(iris$Sepal.Width)
+iris2_1 <- subset(iris, Sepal.Length > 5.8, Sepal.Width) #this code is euqal to the following code
+iris2_2 <- subset(iris, Sepal.Length > 5.8, select = Sepal.Width)
+iris2_3 <- subset(iris, Sepal.Length > 5.8, select = -Sepal.Width)
+
+iris <- iris
+#compare following four codes
+iris3_1 <- subset(iris, Sepal.Length > 5.8 & Sepal.Width)
+iris3_2 <- subset(iris, Sepal.Length > 5.8 & Petal.Length)
+iris3_3 <- subset(iris, Sepal.Length > 5.8 & Petal.Width)
+iris3_4 <- subset(iris, Sepal.Length > 5.8)
+
+iris <- iris
+iris4_1 <- subset(iris, Sepal.Length > 5.8 & Sepal.Width > 3)
+```
+
+
+
+
+##custom function
+```{r}
+cal1_1 <- function(a, b, c){
+  (a+b) / c
+}
+cal1_1(2, 3, 4)
+
+cal1_2 <- function(a = 1, w, m){
+  (a+w) * m
+}
+cal1_2(w = 1, m = 3) #with default a
+cal1_2(w = 2, m = 3) #with default a
+cal1_2(a = 5, w = 1, m = 3)
+cal1_2(a = 5, w = 2, m = 3)
+
+
+#compare the following three customized functio
+cal2_1 <- function(a, b, c){
+  d = (a+b) / c
+  d
+}
+cal2_1(2, 3, 4) #no value
+
+cal2_2 <- function(a, b, c){
+  d = (a+b) / c
+  return(d) #we can choose the value which we want to return ; in here, d
+}
+cal2_2(2, 3, 4)
+
+cal2_3 <- function(a, b, c){
+  d = (a+b) / c
+  return(0) #we can choose the value which we want to return ; in here, 0 
+}
+cal2_3(2, 3, 4)
+```
+
+```{r}
+set.seed(878787)
+abcd <- NULL
+abcd <- as.numeric(abcd)
+abcd <- sample(1000:9999, 1)
+add1_1 <- function(abcd) {
+  as.numeric(substr(abcd, 1, 1))+as.numeric(substr(abcd, 4, 4))+
+    as.numeric(substr(abcd, 2, 2))+as.numeric(substr(abcd, 3, 3))
+}
+add1_1(abcd)
+
+
+#the above code is silmilarly to the following
+set.seed(878787)
+x <- NULL
+w <- NULL
+x <- floor(10000*sample(runif(1000), 1)) #若是取4個?
+for (i in 1:4){
+    w[i] <- substr(x, i, i) %>% as.numeric()
+  }
+sum(w)
+```
+
+```{r}
+#furthermore
+w <- NULL
+fatguy <- function() {
+y <- ceiling(sample(c(10,100,1000,10000), 1)*sample(runif(8787), 1))
+  if (nchar(y) == 4){
+    for(i in 1:4) {
+      w[i] <- substr(y, i, i) %>% as.numeric()
+    }
+   #return(c(sum(w), y))
+    print(c(sum(w), y)) #print < return??
+  } else {
+    return(c(print("NA"),y))
+  }
+}
+fatguy()
+
+replicate(10, fatguy()) #do 10 times `fatguy()`
+
+
+#excecutive loop untill success
+w <- NULL
+fatguy <- function() {
+y <- ceiling(sample(c(10,100,1000,10000), 1)*sample(runif(8787), 1))
+  if (nchar(y) == 4){
+    for(i in 1:4) {
+      w[i] <- substr(y, i, i) %>% as.numeric()
+    }
+    return(c(sum(w), y))
+  } else {
+    fatguy()
+  }
+}
+fatguy()
+```
+
+
+
+
 ##furthermore
 http://www3.nccu.edu.tw/~99354011/R%20commands%2811.09.13%29.pdf
 
 
 
 
-#data visualiztion
+# data visualiztion
 
 ##build histogram
 
@@ -107,7 +445,7 @@ hist(cars$dist, breaks = 10)
 
 
 
-#logical operator
+# logical operator
 
 Next to relational operators, there are also logical operators
 
@@ -136,7 +474,7 @@ sum(cars$dist == 34 | cars$dist == 40)
 
 
 
-#process control
+# process control
 
 ##if, else
 ```{r}
@@ -218,9 +556,9 @@ if (classmean > 75)
 ```
 
 
-QZWD
 
-## if
+
+##if
 ```{r}
 d <- cars$dist[cars$dist < 65]
 s <- cars$speed[cars$speed > 5 | cars$speed > 14]
@@ -258,7 +596,11 @@ switch( if ( a > 90 )  { 1
 
 
 
-#loop
+# loop
+
+for : 逐一查看陣列執行陳述式或區塊內的陳述式。
+while : 重複執行陳述式或區塊內的陳述式，直到指定的條件為 false 為止。
+repeat : 重複執行陳述式或區塊內的陳述式，直到break。
 
 ##for
 ```{r}
@@ -381,276 +723,12 @@ sapply(iris$Sepal.Width, "+", 1)
 
 
 
-#processing data
 
-##missing value
-```{r}
-table(is.na(airquality))
-library(magrittr)
-library(knitr)
-library(kableExtra)
-airquality %>% is.na() %>% kable("html") %>% scroll_box(height = "500px")
-#如何看每一欄有幾個na?
-na.omit(airquality) %>% kable("html") %>% scroll_box(height = "500px")
-```
 
 
 
 
-##NA
-```{r}
-airquality <- airquality
-
-library(magrittr)
-is.na(airquality$Ozone) %>% sum()
-airquality$Ozone[airquality$Ozone == "NA"] #this code is equal to the following code
-airquality[is.na(airquality$Ozone), 1]
-#and compare with the follwing code
-airquality[is.na(airquality$Ozone), 2]
-airquality[is.na(airquality$Ozone), 3]
-
-#more example
-airquality[is.na(airquality$Solar.R), 1]
-airquality[is.na(airquality$Solar.R), 2]
-airquality[is.na(airquality$Solar.R), 3]
-```
-
-
-
-
-## `[]` and `[[]]`
-
-x[i]：回傳向量元素所有資訊
-x[[i]]：只回傳向量元素的值
-x[元素名稱]：回傳向量元素所有資訊
-x[[元素名稱]]：只回傳向量元素的值
-
-```{r}
-library(dplyr)
-library(knitr)
-library(kableExtra)
-iris[1] %>% kable("html") %>% scroll_box(height = "250px", width = "500px")
-iris[[1]] %>% kable("html") %>% scroll_box(height = "250px", width = "500px")
-
-airquality["Wind"] %>% kable("html") %>% scroll_box(height = "250px", width = "500px")  #"element's name"
-airquality[["Wind"]] %>% kable("html") %>% scroll_box(height = "250px", width = "500px")
-
-iris[2:5,1:3]
-```
-
-
-
-
-##array, aperm and dim
-```{r}
-array(iris$Petal.Length, c(3, 4)) #generating a 3*4 array
-
-array(iris$Sepal.Width, c(5, 8)) %>% aperm() #a 8*5 matrix
-```
-
-
-
-
-##input data (iconv : convert the encoding)
-
-iconv(data, "big5", "utf8") convert the encoding of data to UTF-8
-
-
-
-
-##output data
-```{r}
-setwd("C:/Users/USER/Downloads/")
-write.csv(iris, file = "iris.csv")
-getwd()
-```
-
-
-
-
-##recode
-```{r}
-library(magrittr)
-mtcars <- mtcars
-mtcars %>% class()
-median(mtcars$disp)
-repeat {
-  if (median(mtcars$disp) == 0 | median(mtcars$disp) == 0.5 | median(mtcars$disp) == 1) break
-  mtcars$disp <- ifelse(mtcars$disp >196.3, 1, 0)
-}
-mtcars$disp
-
-
-mtcars <- datasets::mtcars
-if (median(mtcars$disp) == 0.5 | median(mtcars$disp) == 0 | median(mtcars$disp) == 1) {
-   print("done")
-} else {
-   mtcars$disp <- ifelse (mtcars$disp > 196.3, 1, 0)
-} 
-mtcars$disp
-```
-
-```{r}
-library(magrittr)
-ToothGrowth <- ToothGrowth
-ToothGrowth %>% class()
-ToothGrowth$supp <-  ifelse(ToothGrowth$supp %in% "VC", "isVChaha", "notVC QAQ")
-
-iris <- iris
-iris$Species <- ifelse(iris$Species %in% "setosa", "IsSetosa","Notsetosa")
-```
-
-
-
-
-##reshape
-```{r}
-library(magrittr)
-iris1 <- iris %>% stack()
-iris1
-#iris2 <- iris %>% unstack() #???
-#iris2
-```
-
-```{r}
-library(longitudinalData) #???
-#iris4 <- iris
-#iris4 <- longitudinalData::artificialJointLongData
-
-#data_long <- reshape(iris4, direction="long", varying = list(c("v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10"), c("w0", "w1", "w2", "w3", "w4", "w5", "w6", "w7", "w8", "w9", "w10"), c("x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10")), v.names = c("v", "w", "x"), idvar = "id")
-
-#data_wide <- reshape(data_long, direction="wide",v.names = c("v", "w", "x"), idvar = "id")
-
-```
-
-want to know how many NA in column, respectively
-```{r}
-airquality <- airquality
-
-library(tidyr)
-airquality <- airquality %>% gather(columnname, value) #convert wide format data to long format data
-
-library(dplyr)
-#sum(airquality$value == "NA") faliure, refer the following code
-sum(is.na(airquality$value))
-airquality[is.na(airquality$value), 2] <- 0
-airquality %>% filter(value == 0) %>%  group_by(columnname) %>% summarise("NA"=n()) %>% View()
-```
-
-
-
-
-##data combination
-```{r}
-ept1 <- list(names = c("tung", "long", "fatguy"), cm = c(18, 3, 20))
-ept2 <- list(sport = c("大肌肌", "LOL", "肥宅不運動"), sport_time = c(20, 24, 0))
-library(magrittr)
-ept12_1 <- cbind(ept1$names, ept2$sport_time) %>% as.data.frame()
-class(ept12_1)
-colnames(ept12_1) <- c("names", "sport_time")
-ept12_1
-
-ept12_2 <- cbind(ept1$names, ept2$sport, ept2$sport_time)
-class(ept12_2)
-colnames(ept12_2) <- c("names", "sport", "sport_time")
-ept12_2
-```
-
-```{r}
-ept3 <- cbind(names = c("tung", "long", "fatguy"), cm = c(18, 3, 20)) %>% as.data.frame()
-ept4 <- cbind(c("大肌肌", "LOL", "肥宅不運動"), c(20, 24, 0)) %>% as.data.frame()
-colnames(ept4) <- c("sport", "sport_time")
-ept34_1 <- cbind(ept3, ept4)
-ept34_2 <- merge(ept3, ept4) #這裡不適合
-
-ept5 <- cbind(names = c("tung", "long", "fatguy"), cm = c(18, 3, 20))
-ept6 <- cbind(names = c("tung", "long", "fatguy"), sport = c("大肌肌", "LOL", "肥宅不運動"), sport_time = c(20, 24, 0))
-ept56_1 <- merge(ept5, ept6, by = "names") #有相同的column name
-ept56_2 <- merge(ept5, ept6)
-```
-
-
-
-
-##data partition
-```{r}
-iris <- iris
-rep(1:11, 3)
-sample(50000, 100) #50000 隨機 再抽樣 (抽100個)
-sample(rep(1:11, 5)) #1:11重複5次 再抽樣
-sample(rep(1:11, 5), 50) #1:11重複5次 再抽樣 (抽50個)
-
-set.seed(1234)
-iris0 <- split(iris, c(10, 25, 55, 9999)) #split依照10,25,55,9999分組 因此最大資料可取用量 為4組, 若是iris0[[5]]則無法取得
-iris1 <- split(iris, sample(rep(1:15, 100))) #split會分組 因為1:15 所以共分成15組 因此最大資料可取用量 為15組, 若是iris1[[16]]則無法取得
-iris1_1 <- iris1[[1]] #取第一組
-iris1_2 <- iris1[[2]] #取第二組
-iris1_3 <- iris1[[3]] #取第三組
-length(iris1_1$Sepal.Length)
-length(iris1_2$Sepal.Length)
-length(iris1_3$Sepal.Length)
-
-iris <- iris
-subset(iris$Sepal.Width, iris$Sepal.Width > median(iris$Sepal.Width))
-median(iris$Sepal.Length)
-median(iris$Sepal.Width)
-iris2_1 <- subset(iris, Sepal.Length > 5.8, Sepal.Width) #this code is euqal to the following code
-iris2_2 <- subset(iris, Sepal.Length > 5.8, select = Sepal.Width)
-iris2_3 <- subset(iris, Sepal.Length > 5.8, select = -Sepal.Width)
-
-iris <- iris
-#compare following four codes
-iris3_1 <- subset(iris, Sepal.Length > 5.8 & Sepal.Width)
-iris3_2 <- subset(iris, Sepal.Length > 5.8 & Petal.Length)
-iris3_3 <- subset(iris, Sepal.Length > 5.8 & Petal.Width)
-iris3_4 <- subset(iris, Sepal.Length > 5.8)
-
-iris <- iris
-iris4_1 <- subset(iris, Sepal.Length > 5.8 & Sepal.Width > 3)
-```
-
-
-
-
-##custom function
-```{r}
-cal1_1 <- function(a, b, c){
-  (a+b) / c
-}
-cal1_1(2, 3, 4)
-
-cal1_2 <- function(a = 1, w, m){
-  (a+w) * m
-}
-cal1_2(w = 1, m = 3) #with default a
-cal1_2(w = 2, m = 3) #with default a
-cal1_2(a = 5, w = 1, m = 3)
-cal1_2(a = 5, w = 2, m = 3)
-
-
-#compare the following three customized functio
-cal2_1 <- function(a, b, c){
-  d = (a+b) / c
-}
-cal2_1(2, 3, 4) #no value
-
-cal2_2 <- function(a, b, c){
-  d = (a+b) / c
-  return(d) #we can choose the value which we want to return ; in here, d
-}
-cal2_2(2, 3, 4)
-
-cal2_3 <- function(a, b, c){
-  d = (a+b) / c
-  return(0) #we can choose the value which we want to return ; in here, 0 
-}
-cal2_3(2, 3, 4)
-```
-
-
-
-
-#database
+# database connection
 
 ##read data from database
 
@@ -676,12 +754,11 @@ library(dbConnect)
 
 
 
-#statistics
+# statistics
 
 ##linear regression
 
-build regression
-
+####build regression
 ```{r}
 library(dplyr)
 f <- lm(data = iris, Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width) %>% summary()
@@ -689,8 +766,7 @@ f
 ```
 
 
-`shapiro.test()` can test the normality of residual
-
+####`shapiro.test()` can test the normality of residual
 ```{r}
 f$residuals %>% kable("html") %>% scroll_box(height = "500px")
 shapiro.test(f$residuals)
@@ -698,8 +774,7 @@ shapiro.test(f$residuals)
 ```
 
 
-`durbinwatsontest()` is a test of Independence or residual
-
+####`durbinwatsontest()` is a test of Independence or residual
 ```{r}
 library(car)
 durbinWatsonTest(lm(data = iris, Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width))
@@ -707,8 +782,7 @@ durbinWatsonTest(lm(data = iris, Sepal.Length ~ Sepal.Width + Petal.Length + Pet
 ```
 
 
-function `ncvTest()` in package "car" is a tset of homogenity of variance
-
+####function `ncvTest()` in package "car" is a tset of homogenity of variance
 ```{r}
 ncvTest(lm(data = iris, Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width))
 #reject Ho
@@ -728,10 +802,43 @@ choose(100, 5)
 
 
 
+##t test
+
+####one sample test
+```{r}
+x <- c(4.3, 4.6, 4.8, 5.4, 5.3, 5.7, 6, 6.3)
+set.seed(8787)
+y <- sample(10*runif(1000), 8)
+
+
+mean(x)
+#Ho : true mean < 0
+t.test(x, alternative = "greater", paired = FALSE, var.euqal = FALSE, conf.level = 0.95)
+```
+
+
+####two sample test
+```{r}
+x <- c(4.3, 4.6, 4.8, 5.4, 5.3, 5.7, 6, 6.3)
+set.seed(8787)
+y <- sample(10*runif(1000), 8)
+
+mean(x) - mean(y)
+#Ho : mean(x) < mean(y)
+var.test(x, y)
+#reject var(x) = var(y) thus the variance of x and y are not euqal
+a = t.test(x, y, alternative = "greater", paired = FALSE, var.equal = FALSE, conf.level = 0.99)
+a$statistic #observation value
+```
 
 
 
 
+##gaptest : test random number generators
+```{r}
+library("randtoolbox")
+gap.test(runif(8787))
+```
 
 
 
